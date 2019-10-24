@@ -11,7 +11,8 @@
         [ValidateSet("Oracle", "MSSQL", "SqlServer")]
         [string]$v,
         [Parameter(Mandatory = $false)]
-        [string]$d
+        [string]$d,
+        [switch]$SkipTest
     )
 
     # Assume encrypted password equals username - possibility open to override this
@@ -40,12 +41,14 @@
     }
 
     Try {
-        Write-Verbose "Testing connection $connectionString"
-        $OLEDBConn = New-Object System.Data.OleDb.OleDbConnection
-        $OLEDBConn.ConnectionString = $connectionString
-        $OLEDBConn.Open()
-        $OLEDBConn.Close()
-        Write-Verbose "Test connection successful"
+        if (!$SkipTest.IsPresent) {
+            Write-Verbose "Testing connection $connectionString"
+            $OLEDBConn = New-Object System.Data.OleDb.OleDbConnection
+            $OLEDBConn.ConnectionString = $connectionString
+            $OLEDBConn.Open()
+            $OLEDBConn.Close()
+            Write-Verbose "Test connection successful"
+        }
 
         return $connectionString
     }
